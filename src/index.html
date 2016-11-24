@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Hello World!</title>
+    <!-- Material Design fonts -->
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <!-- Bootstrap -->
+    <link rel="stylesheet" type="text/css" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <!-- Bootstrap Material Design -->
+    <link rel="stylesheet" type="text/css" href="../node_modules/bootstrap-material-design/dist/css/bootstrap-material-design.css">
+    <link rel="stylesheet" type="text/css" href="../node_modules/bootstrap-material-design/dist/css/ripples.min.css">
+
+</head>
+
+<body>
+    <h1>Hello World!</h1>
+    <a href="javascript:void(0)" class="btn btn-raised btn-default">Default</a>
+</body>
+
+<script>
+    // You can also require other files to run in this process
+    require('../renderer.js')
+
+    var Weibo = require('nodeweibo');
+    var setting = require('./setting.json');
+    Weibo.init(setting);
+    //Weibo.authorize();
+    var jsonParas = {
+        code: "2bab56be715ee9d69263b3ecaed7ba52",
+        grant_type: "authorization_code"
+    };
+
+    Weibo.OAuth2.access_token(jsonParas, function(data) {
+        console.log(data);
+    });
+</script>
+
+</html>
