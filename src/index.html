@@ -12,30 +12,23 @@
     <!-- Bootstrap Material Design -->
     <link rel="stylesheet" type="text/css" href="../node_modules/bootstrap-material-design/dist/css/bootstrap-material-design.css">
     <link rel="stylesheet" type="text/css" href="../node_modules/bootstrap-material-design/dist/css/ripples.min.css">
-
 </head>
 
 <body>
-    <h1>Hello World!</h1>
-    <a href="javascript:void(0)" class="btn btn-raised btn-default">Default</a>
-</body>
+    <a href="javascript:void(0)" onclick="gotoLogin()" class="btn btn-raised btn-default">GotoLogin</a>
+ 
+    <script>
+    const ipcRenderer = require('electron').ipcRenderer;
 
-<script>
-    // You can also require other files to run in this process
-    require('../renderer.js')
+    function gotoLogin() {
+        ipcRenderer.send('blabla', 'hello server!');
+        // 监听 ‘blibli’ 通道, 收到消息后输出
+        ipcRenderer.on('blibli', function(event, arg) {
+            console.log(arg);
+        });
+    }
 
-    var Weibo = require('nodeweibo');
-    var setting = require('./setting.json');
-    Weibo.init(setting);
-    //Weibo.authorize();
-    var jsonParas = {
-        code: "2bab56be715ee9d69263b3ecaed7ba52",
-        grant_type: "authorization_code"
-    };
 
-    Weibo.OAuth2.access_token(jsonParas, function(data) {
-        console.log(data);
-    });
-</script>
+    </script>
 
 </html>

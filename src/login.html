@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Hello World!</title>
+</head>
+
+<body>
+    
+    
+    <webview id="foo" src="https://api.weibo.com/oauth2/authorize?client_id=3710266775&response_type=code&redirect_uri=https://api.weibo.com/oauth2/default.html"  style=" width:640px; height:480px"></webview>
+
+
+</body>
+<script>
+var URL = require('url');
+var Weibo = require('nodeweibo');
+var setting = require('./setting.json');
+ // 引入 ipcRenderer 模块
+const ipcRenderer = require('electron').ipcRenderer;
+Weibo.init(setting);
+onload = function() {
+    var webview = document.getElementById("foo");
+    var loadstart = function() {
+        console.log("loadding");
+    }
+    var loadstop = function() {
+        console.log("stop");
+        console.log(webview.getURL());
+        url = webview.getURL();
+        var params = URL.parse(url, true);
+        console.log(params.hostname)
+        if (params.query.code != null) {
+            console.log(params.query.code);
+            getAccess_token(params.query.code);
+        }
+
+    }
+    webview.addEventListener("did-start-loading", loadstart);
+    webview.addEventListener("did-stop-loading", loadstop);
+}
+
+function getAccess_token(code) {
+    var jsonParas = {
+        code: code,
+        grant_type: "authorization_code"
+    };
+
+    Weibo.OAuth2.access_token(jsonParas, function(data) {
+        console.log(data);
+        //发送登录成功
+		ipcRenderer.send('loginsuccess', data);
+
+     
+    });
+}
+
+
+
+
+
+</script>
+
+</html>
