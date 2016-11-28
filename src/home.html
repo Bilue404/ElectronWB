@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Hello World!</title>
+    <!-- Material Design fonts -->
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <!-- Bootstrap -->
+    <link rel="stylesheet" type="text/css" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <!-- Bootstrap Material Design -->
+    <link rel="stylesheet" type="text/css" href="../node_modules/bootstrap-material-design/dist/css/bootstrap-material-design.css">
+    <link rel="stylesheet" type="text/css" href="../node_modules/bootstrap-material-design/dist/css/ripples.min.css">
+</head>
+
+<body>
+    <!-- <a href="javascript:void(0)" onclick="gotoLogin()" class="btn btn-raised btn-default">Home</a> -->
+    <!-- <div id="app">
+        <p>{{ message }}</p>
+    </div> -->
+
+
+    <div id="app-4">
+  <ol>
+    <li v-for="todo in todos">
+      {{ todo.text }}{{todo.test}}
+    </li>
+  </ol>
+</div>
+</body>
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<script>
+const ipcRenderer = require('electron').ipcRenderer;
+var Weibo = require('nodeweibo');
+var setting = require('./setting.json');
+Weibo.init(setting);
+require('electron').ipcRenderer.on('accessToken', function(event, message) {
+    console.log(message)
+    if (message != null) {
+        var jsonParas = {
+            access_token: message,
+            count: "20"
+        };
+        Weibo.Statuses.home_timeline(jsonParas, function(data) {
+            console.log(data)
+
+        });
+    }
+})
+
+
+var app4 = new Vue({
+  el: '#app-4',
+  data: {
+    todos: [
+      { text: 'Learn JavaScript',test:'!!' },
+      { text: 'Learn Vue' ,test:'??'},
+      { text: 'Build something awesome',test:'..' }
+    ]
+  }
+})
+
+// var vue = new Vue({
+//     el: '#app',
+//     data: {
+//         message: 'Hello Vue.js!'
+//     }
+// })
+</script>
+
+</html>

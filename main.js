@@ -10,7 +10,7 @@ const ipcMain = require('electron').ipcMain;
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
-
+var loginWindow
 function createWindow() {
     // Create the browser window.
     mainWindow = new BrowserWindow({ width: 800, height: 600 })
@@ -73,12 +73,22 @@ ipcMain.on('blabla', function(event, arg) {
 
 
 ipcMain.on('loginsuccess', function(event, arg) {
-
     console.log(arg);
     loginWindow.hide();
-    
+
+     mainWindow.loadURL(url.format({
+        pathname: path.join(__dirname, 'src/home.html'),
+        protocol: 'file:',
+        slashes: true
+    }))
+
+
+     mainWindow.webContents.on('did-finish-load', function () {
+    mainWindow.webContents.send('accessToken', arg)
+  })
+
 })
-var loginWindow
+
 
 function gotoLoginWindow() {
     loginWindow = new BrowserWindow({ width: 650, height: 500 })
@@ -88,10 +98,9 @@ function gotoLoginWindow() {
         protocol: 'file:',
         slashes: true
     }))
+    // loginWindow.webContents.openDevTools()
 
     loginWindow.show()
 }
 
-
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
+//1696097715@qq.com
