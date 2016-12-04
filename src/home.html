@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Hello World!</title>
+    <title>ELectron WeiBo</title>
     <!-- Material Design fonts -->
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/icon?family=Material+Icons">
@@ -15,58 +15,108 @@
 </head>
 
 <body>
-    <!-- <a href="javascript:void(0)" onclick="gotoLogin()" class="btn btn-raised btn-default">Home</a> -->
-    <!-- <div id="app">
-        <p>{{ message }}</p>
-    </div> -->
-
-
-    <div id="app-4">
-  <ol>
-    <li v-for="todo in todos">
-      {{ todo.text }}{{todo.test}}
-    </li>
-  </ol>
+<div class="list-group">
 </div>
+<ul class="nav nav-pills nav-stacked" style="max-width: 800px;">
+    <li class="active"><a onclick="getWBItemList()" href="javascript:void(0)" class="load_more">load more</a></li>
+</ul>
 </body>
-<script src="https://unpkg.com/vue/dist/vue.js"></script>
 <script>
-const ipcRenderer = require('electron').ipcRenderer;
-var Weibo = require('nodeweibo');
-var setting = require('./setting.json');
-Weibo.init(setting);
-require('electron').ipcRenderer.on('accessToken', function(event, message) {
-    console.log(message)
-    if (message != null) {
+    const ipcRenderer = require('electron').ipcRenderer;
+    var Weibo = require('nodeweibo');
+    var setting = require('./setting.json');
+    var currPage = 1;
+    var token;
+    Weibo.init(setting);
+    ipcRenderer.on('accessToken', function(event, message) {
+        console.log(message)
+        if (message != null) {
+            token = message;
+            getWBItemList();
+        }
+    })
+
+
+    function getWBItemList() {
+    setElementText("load_more","loading...");
         var jsonParas = {
-            access_token: message,
-            count: "20"
+            access_token: token,
+            count: "20",
+            feature:1,
+            page:currPage
         };
         Weibo.Statuses.home_timeline(jsonParas, function(data) {
-            console.log(data)
+            if (data.statuses!=null){
+                addDataToList(data.statuses);
+                currPage++;
+            }
+            else{
+                addNoDataToList(data.statuses);
+            }
+
+            setElementText("load_more","loadmore");
 
         });
+
     }
-})
 
 
-var app4 = new Vue({
-  el: '#app-4',
-  data: {
-    todos: [
-      { text: 'Learn JavaScript',test:'!!' },
-      { text: 'Learn Vue' ,test:'??'},
-      { text: 'Build something awesome',test:'..' }
-    ]
-  }
-})
+    function addDataToList(itemList){
+        console.log(itemList);
+        var imgAdd = "http://tva1.sinaimg.cn/crop.0.0.440.440.50/6927e7a5jw8ezf44123d4j20c80c80tg.jpg";
 
-// var vue = new Vue({
-//     el: '#app',
-//     data: {
-//         message: 'Hello Vue.js!'
-//     }
-// })
+
+
+        var listGroup = document.getElementsByClassName("list-group");
+        console.log(listGroup);
+        listGroup.innerHTML = '';
+        for(var position in itemList){
+            //console.log(configObj[index].content);
+//            var userHeadImg = itemObj[position].user.profile_image_url;
+            var itemView = getItemView(itemList[position]);;
+            if(itemView!=null){
+                listGroup[0].innerHTML += itemView;
+            }
+        }
+    }
+
+    function addNoDataToList(itemObj){
+
+    }
+
+    function getItemView(ItemObj) {
+        var userHeadImg = ItemObj.user.profile_image_url;
+        var userName = ItemObj.user.name;
+        var weiboText = ItemObj.text;
+        var creatTime = ItemObj.created_at;
+        var template= "<div class='list-group-item'>" +
+            "<div class='row-picture' data-placement='top'>" +
+            "<img class='circle' src='" +
+            userHeadImg
+            +
+            "' alt='icon'>" +
+            "</div>" +
+            "<div class='row-content'> " +
+            "<h4 class='list-group-item-heading'>" +
+            userName +
+            "</h4>" +
+            "<p class='list-group-item-text'>" +
+            weiboText
+            +
+            "</p> " +
+            "</div> " +
+            "</div>" +
+            "<div class='list-group-separator'></div>"
+            ;
+
+        return template;
+    }
+
+    function setElementText(elementClass,text) {
+        var element = document.getElementsByClassName(elementClass);
+        element.innerHTML = '';
+        element[0].innerHTML = text;
+    }
 </script>
 
 </html>
